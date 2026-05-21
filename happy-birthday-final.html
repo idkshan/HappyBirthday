@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Happy Birthday</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --guards-red: #D5001C;
+    --cream: #f4e6c8;
+    --gold: #c9a45a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+
+  body {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--cream);
+    background:
+      radial-gradient(ellipse at 50% 110%, #2a1a1a 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, #3a2030 0%, transparent 55%),
+      linear-gradient(180deg, #050507 0%, #0d0d12 55%, #1a0f0f 100%);
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none;
+    opacity: 0.1;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+    z-index: 100;
+  }
+
+  .stars {
+    position: fixed; inset: 0 0 50% 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--cream);
+    border-radius: 50%;
+    opacity: 0;
+    animation: twinkle 3s infinite;
+  }
+
+  .stage {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+  }
+
+  .kicker {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.8rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .kicker::before, .kicker::after {
+    content: '— ';
+    color: var(--guards-red);
+  }
+  .kicker::after { content: ' —'; }
+
+  h1 {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    font-size: clamp(3rem, 9vw, 7rem);
+    line-height: 0.95;
+    text-align: center;
+    margin: 0;
+    text-transform: uppercase;
+    text-shadow: 0 6px 30px rgba(0,0,0,0.6);
+  }
+
+  h1 span {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(40px);
+    animation: dropIn 0.7s cubic-bezier(.2,.9,.3,1.2) forwards;
+  }
+
+  h1 .word {
+    display: inline-block;
+    white-space: nowrap;
+    margin: 0 0.15em;
+  }
+
+  h1 .accent {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--guards-red);
+  }
+
+  .hint {
+    margin-top: 1.5rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 1s 3.4s forwards, pulse 2.5s 4.4s infinite;
+  }
+
+  .specs {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 1rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(244, 230, 200, 0.5);
+    opacity: 0;
+    animation: fadeUp 1s 3.6s forwards;
+  }
+
+  .spec b {
+    color: var(--gold);
+  }
+
+  .streak {
+    position: fixed;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cream), transparent);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .spark {
+    position: fixed;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  .car-stage.running img {
+  animation: engine-shake 0.08s infinite linear;
+  transform-origin: center;
+  will-change: transform;
+}
+
+  .car-stage {
+    position: relative;
+    width: min(720px, 90vw);
+    margin-top: 2.5rem;
+    opacity: 0;
+    animation: rollIn 1.4s 1.8s cubic-bezier(.3,.7,.3,1) forwards;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  .car-stage svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 30px 25px rgba(0,0,0,0.55));
+  }
+
+/* exit left */
+@keyframes driveOutLeft {
+  0%   { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(-120vw); opacity: 0; }
+}
+
+/* enter from right */
+@keyframes driveInRight {
+  0%   { transform: translateX(120vw); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.car-out {
+  animation: driveOutLeft 0.9s ease-in-out forwards;
+}
+
+.car-in {
+  animation: driveInRight 0.9s ease-in-out forwards;
+}
+
+/* idle engine shake */
+.car-idle img {
+  animation: engine-shake 0.08s infinite linear;
+}
+
+@keyframes engine-shake {
+  0%   { transform: translate(0px, 0px) rotate(0deg); }
+  15%  { transform: translate(0.6px, -0.4px) rotate(-0.3deg); }
+  30%  { transform: translate(-0.5px, 0.5px) rotate(0.2deg); }
+  45%  { transform: translate(0.4px, 0.3px) rotate(-0.2deg); }
+  60%  { transform: translate(-0.6px, -0.3px) rotate(0.3deg); }
+  75%  { transform: translate(0.3px, -0.5px) rotate(-0.1deg); }
+  100% { transform: translate(0px, 0px) rotate(0deg); }
+}
+
+  @keyframes dropIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes rollIn {
+    from { opacity: 0; transform: translateX(120px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes idle-shake {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(0.6px); }
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0; }
+    50%      { opacity: 0.8; }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50%      { opacity: 1; }
+  }
+
+  @keyframes streak-move {
+    from { transform: translateX(0); opacity: 1; }
+    to   { transform: translateX(-110vw); opacity: 0; }
+  }
+
+  @keyframes spark-rise {
+    to {
+      transform: translate(var(--dx), var(--dy));
+      opacity: 0;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="stage">
+  <div class="kicker">Porsche 911 Turbo</div>
+
+  <h1>
+    <span class="word">
+      <span style="animation-delay: 0.5s">H</span><span style="animation-delay: 0.58s">A</span><span style="animation-delay: 0.66s">P</span><span style="animation-delay: 0.74s">P</span><span style="animation-delay: 0.82s">Y</span>
+    </span>
+    <span class="word">
+      <span style="animation-delay: 0.95s">B</span><span style="animation-delay: 1.03s">I</span><span style="animation-delay: 1.11s">R</span><span style="animation-delay: 1.19s">T</span><span style="animation-delay: 1.27s">H</span><span style="animation-delay: 1.35s">D</span><span style="animation-delay: 1.43s">A</span><span style="animation-delay: 1.51s">Y</span>
+    </span>
+  </h1>
+
+  <div class="car-stage" id="car">
+    <img src="images/porsche.png" alt="Porsche 911 Turbo">
+  </div>
+
+  <div class="hint" id="hint">↑ Click the car to start the engine</div>
+
+  <div class="specs">
+    <div class="spec">3.6L <b>FLAT-SIX</b></div>
+    <div class="spec">TWIN <b>TURBO</b></div>
+    <div class="spec">408 <b>HP</b></div>
+    <div class="spec">0–60 IN <b>4.4s</b></div>
+  </div>
+</div>
+
+<script>
+  const starsEl = document.getElementById('stars');
+
+  for (let i = 0; i < 90; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.animationDelay = Math.random() * 3 + 's';
+    starsEl.appendChild(s);
+  }
+
+  const car = document.getElementById('car');
+  const hint = document.getElementById('hint');
+  let started = false;
+
+car.addEventListener('click', () => {
+  if (started) return;
+  started = true;
+
+  hint.textContent = '↑ Click again to restart';
+  hint.style.animation = 'fadeUp 0.6s forwards';
+
+  // STEP 1: drive out left
+  car.classList.add('car-out');
+
+  setTimeout(() => {
+
+    // STEP 2: reset instantly OFFSCREEN RIGHT
+    car.classList.remove('car-out');
+
+    requestAnimationFrame(() => {
+      car.style.transform = 'translateX(120vw)';
+      car.style.opacity = '0';
+
+      void car.offsetHeight; // force reflow
+
+      // STEP 3: drive back in
+      requestAnimationFrame(() => {
+        car.classList.add('car-in');
+
+        setTimeout(() => {
+
+          // STEP 4: settle at center + engine shake
+          car.classList.remove('car-in');
+          car.classList.add('car-idle');
+
+          car.style.transform = 'translateX(0)';
+          car.style.opacity = '1';
+
+          // IMPORTANT: allow replay after animation fully finishes
+          started = false;
+
+        }, 900);
+      });
+    });
+
+  }, 900);
+});
+
+</script>
+
+</body>
+</html>
