@@ -200,18 +200,18 @@
   animation: driveInRight 0.9s ease-in-out forwards;
 }
 
-/* idle engine shake */
+/* idle engine shake (moderate) */
 .car-idle img {
   animation: engine-shake 0.08s infinite linear;
 }
 
 @keyframes engine-shake {
   0%   { transform: translate(0px, 0px) rotate(0deg); }
-  15%  { transform: translate(0.6px, -0.4px) rotate(-0.3deg); }
-  30%  { transform: translate(-0.5px, 0.5px) rotate(0.2deg); }
-  45%  { transform: translate(0.4px, 0.3px) rotate(-0.2deg); }
-  60%  { transform: translate(-0.6px, -0.3px) rotate(0.3deg); }
-  75%  { transform: translate(0.3px, -0.5px) rotate(-0.1deg); }
+  15%  { transform: translate(1.2px, -0.8px) rotate(-0.6deg); }
+  30%  { transform: translate(-1px, 1px) rotate(0.5deg); }
+  45%  { transform: translate(0.9px, 0.6px) rotate(-0.4deg); }
+  60%  { transform: translate(-1.1px, -0.7px) rotate(0.6deg); }
+  75%  { transform: translate(0.8px, -1px) rotate(-0.5deg); }
   100% { transform: translate(0px, 0px) rotate(0deg); }
 }
 
